@@ -1,74 +1,33 @@
-import express, { Request, Response } from 'express';
-import dotenv from 'dotenv';
-import mongoose from 'mongoose';
+import express from 'express';
+import connectDB from './config/db';
 import cors from 'cors';
-import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
+import imageRoutes from './routes/imageRoutes';
 
-dotenv.config();
+// Conectar a la base de datos
+connectDB();
 
+// Crear aplicación Express
 const app = express();
 
-// Configura CORS para permitir solicitudes desde tu frontend
-app.use(cors({
-  origin: 'http://localhost:3000', // Cambia si tu frontend está en otro puerto
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
-}));
-
-// Ruta de la carpeta donde se guardarán las imágenes
-const uploadDir = path.join(__dirname, '../uploads');
-
-// Asegurarnos de que la carpeta `uploads` existe, si no, la creamos
-fs.promises.mkdir(uploadDir, { recursive: true })
-  .then(() => {
-    console.log('Carpeta uploads asegurada o creada');
+app.use(
+  cors({
+    origin: "http://localhost:3000", // URL del front
+    methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
+    allowedHeaders: ["Content-Type", "Authorization"], // Cabeceras permitidas
   })
-  .catch(err => {
-    console.error('Error al crear la carpeta uploads:', err);
-  });
+);
 
-// Configura Multer para manejar la subida de imágenes
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir); // Usamos el directorio asegurado
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Nombre único para cada archivo
-  }
-});
-
-const upload = multer({ storage });
-
-// Rutas
+// Middlewares
 app.use(express.json());
 
-// Ruta para subir imágenes
-app.post('/upload', upload.single('image'), (req: Request, res: Response): void => {
-  // Asegurarse de que se subió un archivo
-  if (!req.file) {
-    res.status(400).json({ message: 'No file uploaded' }); // Respuesta sin retornar
-    return;
-  }
+const uploadsPath = path.join(__dirname, '../uploads');
+app.use('/uploads', express.static(uploadsPath));
 
-  // Devuelve la URL donde se puede acceder a la imagen
-  const imageUrl = `/uploads/${req.file.filename}`;
+// Rutas
+app.use('/api/images', imageRoutes);
 
-  // Respuesta exitosa con la URL de la imagen
-  res.status(200).json({ message: 'Image uploaded successfully', url: imageUrl }); // Respuesta sin retornar
-});
-
-// Ruta para servir archivos estáticos (imágenes subidas)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Conexión a MongoDB (si es necesario)
-mongoose.connect(process.env.MONGO_URI as string)
-  .then(() => console.log('Conectado a MongoDB'))
-  .catch((err) => console.error('Error al conectar a MongoDB:', err));
-
-// Inicia el servidor
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+// Iniciar servidor
+app.listen(5000, () => {
+  console.log('Servidor corriendo en http://localhost:5000');
 });

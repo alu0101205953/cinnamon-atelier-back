@@ -1,18 +1,16 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
-interface IImage extends mongoose.Document {
-  url: string;
+interface IImage extends Document {
   title: string;
   description: string;
+  url: string;
 }
 
-const imageSchema = new mongoose.Schema<IImage>(
-  {
-    url: { type: String, required: true },
-    title: { type: String, required: true },
-    description: { type: String, required: true }
-  },
-  { timestamps: true }
-);
+const imageSchema = new Schema<IImage>({
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  url: { type: String, required: true },
+});
 
-export default mongoose.model<IImage>('Image', imageSchema);
+const Image = mongoose.model<IImage>('Image', imageSchema);
+export default Image;
