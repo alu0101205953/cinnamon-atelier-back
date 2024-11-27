@@ -6,7 +6,7 @@ const router = express.Router();
 // Crear un nuevo pedido
 router.post('/api/orders', async (req: Request, res: Response) => {
   try {
-    const { size, flavor, isHeartShaped, price, deliveryDate } = req.body;
+    const { size, flavor, isHeartShaped, price, deliveryDate, phoneNumber, notes, imageUrl } = req.body;
 
     // Generar un número único de pedido
     const orderNumber = `ORDER-${Date.now()}`;
@@ -17,7 +17,10 @@ router.post('/api/orders', async (req: Request, res: Response) => {
       isHeartShaped,
       price,
       orderNumber,
-      deliveryDate
+      deliveryDate,
+      phoneNumber,
+      notes: notes || '',
+      imageUrl: imageUrl || ''
     });
 
     const savedOrder = await newOrder.save();
