@@ -1,0 +1,25 @@
+{
+  "short_name": "The Cinnamon Atelier",
+  "name": "The Cinnamon Atelier",
+  "icons": [
+    {
+      "src": "logo-cinnamon.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo-cinnamon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo-cinnamon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

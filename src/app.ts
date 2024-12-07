@@ -22,15 +22,25 @@ app.use(
 
 // Middlewares
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Asegúrate de que se procesen los datos del cuerpo correctamente
+app.use(express.urlencoded({ extended: true }));
 
-// Servir archivos estáticos (imágenes)
+// Ruta estática para los uploads
 const uploadsPath = path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsPath));
 
-// Rutas
-app.use('/api/images', imageRoutes);  // Ruta para manejar imágenes
+// Rutas del backend
+app.use('/api/images', imageRoutes); // Ruta para manejar imágenes
 app.use(orderRoutes);
+
+// Servir la build del frontend
+const frontBuildPath = path.join(__dirname, '../frontend-build');
+app.use(express.static(frontBuildPath));
+
+// Middleware para rutas no encontradas (404)
+app.use((req, res, next) => {
+  res.status(404).sendFile(path.join(frontBuildPath, 'index.html'));
+});
+
 
 // Iniciar servidor
 app.listen(5000, () => {
